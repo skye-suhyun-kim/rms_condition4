@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Condition 4: No Label + Anonymous Review Absent</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #e8f4fd;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 30px 10px;
+      }
+      .frame {
+        width: 375px;
+        height: 812px;
+        background: #fff;
+        border-radius: 12px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      }
+      .body {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        background: #f7f7f7;
+      }
+      .player-card {
+        flex: 1;
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #e0e0e0;
+        padding: 14px 14px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .now-playing-label { font-size: 12px; font-weight: 700; color: #222; }
+      .player-main { display: flex; align-items: center; gap: 12px; }
+      .album-art {
+        width: 100px;
+        height: 100px;
+        border-radius: 6px;
+        background: linear-gradient(180deg, #c97a8a 0%, #7b5ea7 40%, #2d1b4e 100%);
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
+      }
+      .album-art-mountains { position: absolute; bottom: 0; left: 0; right: 0; height: 45%; }
+      .mountain-svg { width: 100%; height: 100%; }
+      .song-info { flex: 1; }
+      .song-title { font-size: 16px; font-weight: 700; color: #111; margin-bottom: 4px; }
+      .song-artist { font-size: 13px; color: #888; }
+      .progress-section { display: flex; flex-direction: column; gap: 4px; }
+      .progress-bar-wrap { position: relative; height: 4px; background: #ddd; border-radius: 2px; }
+      .progress-fill { width: 0%; height: 100%; background: #333; border-radius: 2px; position: relative; }
+      .progress-thumb {
+        position: absolute;
+        right: -5px; top: 50%;
+        transform: translateY(-50%);
+        width: 10px; height: 10px;
+        background: #333; border-radius: 50%;
+      }
+      .time-row { display: flex; justify-content: space-between; font-size: 10px; color: #888; }
+      .controls { display: flex; align-items: center; justify-content: center; gap: 20px; }
+      .ctrl-btn {
+        background: none; border: none; cursor: pointer;
+        color: #555; font-size: 16px;
+        display: flex; align-items: center; justify-content: center;
+        padding: 4px;
+      }
+      .ctrl-btn.muted { color: #aaa; font-size: 14px; }
+      .play-btn {
+        width: 40px; height: 40px;
+        background: #111; border-radius: 50%; border: none;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 16px; padding-left: 2px;
+      }
+      .footer-note {
+        font-size: 10px; color: #999;
+        display: flex; align-items: center; gap: 5px;
+        margin-top: auto; padding-top: 6px;
+      }
+      .right-panel { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+      .info-card { background: #fff; border-radius: 10px; border: 1px solid #e0e0e0; padding: 12px 14px; }
+      .card-label { font-size: 12px; font-weight: 700; color: #222; margin-bottom: 8px; }
+      .no-info-badge {
+        background: #f5efe0; border: 1px solid #ddd0b8;
+        border-radius: 8px; padding: 14px 12px;
+        text-align: center; font-size: 12px; color: #777766; line-height: 1.5;
+      }
+      .comments-card {
+        background: #fff; border-radius: 10px;
+        border: 1px solid #e0e0e0; padding: 12px 14px; flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="audioPlayer"></audio>
+    <div class="frame">
+      <div class="body">
+        <div class="player-card">
+          <div class="now-playing-label">현재 재생 중</div>
+          <div class="player-main">
+            <div class="album-art">
+              <div class="album-art-mountains">
+                <svg class="mountain-svg" viewBox="0 0 100 45" preserveAspectRatio="none">
+                  <polygon points="0,45 20,10 40,30 60,5 80,25 100,15 100,45" fill="#1a0e35" />
+                </svg>
+              </div>
+            </div>
+            <div class="song-info">
+              <div class="song-title">Eternal Horizon</div>
+              <div class="song-artist">Unknown Artist</div>
+            </div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-bar-wrap">
+              <div class="progress-fill" id="progressFill">
+                <div class="progress-thumb"></div>
+              </div>
+            </div>
+            <div class="time-row">
+              <span id="currentTime">0:00</span><span id="duration">0:00</span>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="ctrl-btn muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 3 21 3 21 8" />
+                <line x1="4" y1="20" x2="21" y2="3" />
+                <polyline points="21 16 21 21 16 21" />
+                <line x1="4" y1="4" x2="21" y2="21" />
+              </svg>
+            </button>
+            <button class="ctrl-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="19,20 9,12 19,4" />
+                <rect x="5" y="4" width="2" height="16" />
+              </svg>
+            </button>
+            <button class="play-btn" id="playBtn">&#9654;</button>
+            <button class="ctrl-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="5,4 15,12 5,20" />
+                <rect x="17" y="4" width="2" height="16" />
+              </svg>
+            </button>
+            <button class="ctrl-btn muted">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="17 1 21 5 17 9" />
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                <polyline points="7 23 3 19 7 15" />
+                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+              </svg>
+            </button>
+          </div>
+          <div class="footer-note">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+              <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+              <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+            </svg>
+            다음으로 넘어가기 전에 음악을 끝까지 들어주세요.
+          </div>
+        </div>
+
+        <div class="right-panel">
+          <div class="info-card">
+            <div class="card-label">Information</div>
+            <div class="no-info-badge">제작자 정보가 없습니다.</div>
+          </div>
+          <div class="comments-card">
+            <div class="card-label">User Reviews</div>
+            <div style="display: flex; align-items: center; justify-content: center; height: 100%; min-height: 150px; color: #999; font-size: 14px;">
+              등록된 리뷰가 없습니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const audioPlayer = document.getElementById('audioPlayer');
+      const playBtn = document.getElementById('playBtn');
+      const progressFill = document.getElementById('progressFill');
+      const currentTimeEl = document.getElementById('currentTime');
+      const durationEl = document.getElementById('duration');
+
+      // ✏️ MP3 파일명을 여기에 입력하세요 (HTML 파일과 같은 폴더에 있어야 함)
+      audioPlayer.src = 'music.mp3';
+
+      function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+      }
+
+      playBtn.addEventListener('click', () => {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+          playBtn.textContent = '⏸';
+        } else {
+          audioPlayer.pause();
+          playBtn.textContent = '▶';
+        }
+      });
+
+      audioPlayer.addEventListener('timeupdate', () => {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progressFill.style.width = progress + '%';
+        currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+      });
+
+      audioPlayer.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(audioPlayer.duration);
+      });
+
+      audioPlayer.addEventListener('ended', () => {
+        playBtn.textContent = '▶';
+        progressFill.style.width = '0%';
+        audioPlayer.currentTime = 0;
+        currentTimeEl.textContent = '0:00';
+      });
+
+      const progressBar = document.querySelector('.progress-bar-wrap');
+      progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        audioPlayer.currentTime = percent * audioPlayer.duration;
+      });
+    </script>
+  </body>
+</html>
